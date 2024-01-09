@@ -1,0 +1,34 @@
+{
+  "name": "transfer-elements",
+  "version": "1.0.1",
+  "type": "module",
+  "description": "Moves elements from one place to another.",
+  "keywords": [
+    "lightweight",
+    "performance",
+    "responsive",
+    "adaptive",
+    "breakpoints",
+    "vanilla",
+    "javascript",
+    "pure",
+    "library",
+    "dom-manipulation",
+    "no-dependencies"
+  ],
+  "author": "SineYlo",
+  "license": "MIT",
+  "exports": "./dist/transfer-elements.esm.min.js",
+  "browser": "./dist/transfer-elements.min.js",
+  "files": [
+    "./dist/"
+  ],
+  "homepage": "https://github.com/SineYlo/transfer-elements",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SineYlo/transfer-elements.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SineYlo/transfer-elements/issues"
+  }
+}
