@@ -53,7 +53,7 @@ import TransferElements from 'transfer-elements';
 Если вы не установили библиотеку, можете импортировать её из CDN.
 
 ```JS
-import TransferElements from 'https://cdn.jsdelivr.net/npm/transfer-elements@1.0.0/dist/transfer-elements.esm.min.js'
+import TransferElements from 'https://cdn.jsdelivr.net/npm/transfer-elements@1.0.2/dist/transfer-elements.esm.min.js'
 ```
 
 ### Тег \<script\>
@@ -61,18 +61,18 @@ import TransferElements from 'https://cdn.jsdelivr.net/npm/transfer-elements@1.0
 Также, как и в случае с модулями, при желании вы можете использовать CDN.
 
 ```HTML
-<script src="https://cdn.jsdelivr.net/npm/transfer-elements@1.0.0">
+<script src="https://cdn.jsdelivr.net/npm/transfer-elements@1.0.2">
 ```
 
 Ссылка короче, чем для модулей, потому что файл запрашивается по умолчанию `transfer-elements.min.js`. Так или иначе вы можете указать полную ссылку.
 
 ```HTML
-<script src="https://cdn.jsdelivr.net/npm/transfer-elements@1.0.0/dist/transfer-elements.min.js">
+<script src="https://cdn.jsdelivr.net/npm/transfer-elements@1.0.2/dist/transfer-elements.min.js">
 ```
 
 ### Прочее
 
-Если все выше перечисленные варианты не подходят по какой-либо причине, можете [скачать файлы](https://www.jsdelivr.com/package/npm/transfer-elements) и подключить библиотеку так как вам нужно.
+Если все выше перечисленные варианты не подходят по какой-либо причине, можете [скачать файлы](https://cdn.jsdelivr.net/npm/transfer-elements@1.0.2/dist/) и подключить библиотеку так как вам нужно.
 
 <h2 id="usage">
   <img src="./assets/usage-section-ru.png" alt="Использование">

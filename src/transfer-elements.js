@@ -1,7 +1,7 @@
 /**
  * @file Moves elements from one place to another.
  * @copyright SineYlo, 2024
- * @version 1.0.1
+ * @version 1.0.2
  * @license MIT
  */
 
