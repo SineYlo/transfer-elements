@@ -1,59 +1,59 @@
 /**
- * @file Moves elements from one place to another.
+ * @file Dynamic transfer of elements from one place to another at breakpoints.
  * @copyright SineYlo, 2024
- * @version 2.0.0
+ * @version 1.0.5
  * @license MIT
  */
 
 class TransferElements {
-  constructor(...objects_with_parameters) {
-    if (objects_with_parameters.length === 0) {
+  constructor(...objectsWithParameters) {
+    if (objectsWithParameters.length === 0) {
       throw TypeError('at least one object with parameters must be specified for the constructor');
     }
 
-    const source_elements = [];
+    const sourceElements = [];
 
-    const validated_objects_with_parameters = objects_with_parameters.map(
-      (object_with_parameters) => {
+    const validatedObjectsWithParameters = objectsWithParameters.map(
+      (objectWithParameters) => {
         if (
-          this.#get_object_type(object_with_parameters) !== '[object Object]'
+          this.#getObjectType(objectWithParameters) !== '[object Object]'
         ) {
           throw TypeError(`the arguments specified for the constructor must be objects of type 'Object'`);
         }
 
-        ['source_element', 'breakpoints'].forEach((parameter_key) => {
-          if (!(Object.hasOwn(object_with_parameters, parameter_key))) {
-            throw TypeError(`the '${parameter_key}' parameter is not specified for the main object`);
+        ['sourceElement', 'breakpoints'].forEach((parameterKey) => {
+          if (!(Object.hasOwn(objectWithParameters, parameterKey))) {
+            throw TypeError(`the '${parameterKey}' parameter is not specified for the main object`);
           }
         });
 
-        const { source_element, breakpoints } = object_with_parameters;
+        const { sourceElement, breakpoints } = objectWithParameters;
 
-        if (!(source_element instanceof Element)) {
-          throw TypeError(`the value specified for the 'source_element' parameter must be an object of type 'Element'`);
+        if (!(sourceElement instanceof Element)) {
+          throw TypeError(`the value specified for the 'sourceElement' parameter must be an object of type 'Element'`);
         }
 
-        if (source_elements.includes(source_element)) {
-          throw TypeError(`there can only be one object in the constructor with such a 'source_element': '${source_element.cloneNode().outerHTML}'`);
+        if (sourceElements.includes(sourceElement)) {
+          throw TypeError(`there can only be one object in the constructor with such a 'sourceElement': '${sourceElement.cloneNode().outerHTML}'`);
         }
 
-        source_elements.push(source_element);
+        sourceElements.push(sourceElement);
 
-        object_with_parameters.breakpoints = this.#assemble_breakpoints(
+        objectWithParameters.breakpoints = this.#assembleBreakpoints(
           breakpoints,
-          source_element
+          sourceElement
         );
 
-        return object_with_parameters;
+        return objectWithParameters;
       }
     );
 
-    const sorted_breakpoint_triggers = [...(
-      validated_objects_with_parameters.reduce(
+    const sortedBreakpointTriggers = [...(
+      validatedObjectsWithParameters.reduce(
         (collection, { breakpoints }) => {
-          Object.keys(breakpoints).forEach((breakpoint_trigger) => {
-            if (Number(breakpoint_trigger)) {
-              collection.add(breakpoint_trigger);
+          Object.keys(breakpoints).forEach((breakpointTrigger) => {
+            if (Number(breakpointTrigger)) {
+              collection.add(breakpointTrigger);
             }
           });
 
@@ -62,11 +62,11 @@ class TransferElements {
 
         new Set()
       ).add('default')
-    )].sort((a, b) => b - a);
+    )].sort((a, b) => a - b);
 
-    const storage_of_breakpoints = sorted_breakpoint_triggers.reduce(
-      (storage, breakpoint_trigger) => {
-        storage.set(breakpoint_trigger, []);
+    const storageOfBreakpoints = sortedBreakpointTriggers.reduce(
+      (storage, breakpointTrigger) => {
+        storage.set(breakpointTrigger, []);
 
         return storage;
       },
@@ -74,224 +74,199 @@ class TransferElements {
       new Map()
     );
 
-    validated_objects_with_parameters.forEach(
-      ({ source_element, breakpoints }) => {
+    validatedObjectsWithParameters.forEach(
+      ({ sourceElement, breakpoints }) => {
         Object.entries(breakpoints).forEach(
-          ([breakpoint_trigger, { target_element, target_position }]) => {
-            /**
-             * Each breakpoint object in the internal storage must contain
-             * three properties ('source_element', 'target_element'
-             * and 'target_position'). This is necessary in order to be able
-             * to consider the breakpoint as an independent part of the rest.
-             * Thanks to this, we can avoid sequential transfer.
-             * ——————————————————————————————————————————————————
-             * At this stage, objects are added in a chaotic manner, and
-             * to some extent they are temporary.
-             */
-            storage_of_breakpoints.get(breakpoint_trigger).push({
-              source_element,
-              target_element,
-              target_position
+          ([breakpointTrigger, { targetElement, targetPosition }]) => {
+            storageOfBreakpoints.get(breakpointTrigger).push({
+              sourceElement,
+              targetElement,
+              targetPosition
             });
           }
         );
       }
     );
 
-    storage_of_breakpoints.forEach((breakpoint_objects) => {
-      this.#sort_breakpoint_objects(breakpoint_objects);
+    storageOfBreakpoints.forEach((breakpointObjects) => {
+      this.#sortBreakpointObjects(breakpointObjects);
 
-      this.#remove_source_elements(breakpoint_objects);
-      this.#insert_source_elements(breakpoint_objects, true);
+      this.#removeSourceElements(breakpointObjects);
+      this.#insertSourceElements(breakpointObjects, true);
 
-      breakpoint_objects.length = 0;
+      breakpointObjects.length = 0;
 
-      source_elements.forEach((source_element) => {
-        breakpoint_objects.push(this.#generate_breakpoint_object(
-          source_element,
+      sourceElements.forEach((sourceElement) => {
+        breakpointObjects.push(this.#generateBreakpointObject(
+          sourceElement,
           true
         ));
       });
 
-      this.#sort_breakpoint_objects(breakpoint_objects);
+      this.#sortBreakpointObjects(breakpointObjects);
     });
 
-    let previous_breakpoint_trigger = 'default';
+    let previousBreakpointTrigger = 'default';
 
-    const resize_observer = new ResizeObserver(
+    const resizeObserver = new ResizeObserver(
       ([{ borderBoxSize: [{ inlineSize }], target }]) => {
-        /**
-         * It is important to check the scrollbar before transferring
-         * the source element, and if it is present, then get its width and add
-         * it to the width of the observed element. If this is not done,
-         * the transfer will be performed before what is necessary.
-         */
-        const current_width = inlineSize + this.#get_scrollbar_width(target);
+        const currentWidth = inlineSize + this.#getScrollbarWidth(target);
 
-        const current_breakpoint_trigger = this.#get_breakpoint_trigger(
-          sorted_breakpoint_triggers,
-          current_width
+        const currentBreakpointTrigger = this.#getBreakpointTrigger(
+          sortedBreakpointTriggers,
+          currentWidth
         );
 
-        /**
-         * One of the optimizations that makes sure that the transfer is not
-         * performed continuously with each change in the size of the observed
-         * element, but only if the current breakpoint trigger differs from
-         * the previous one. That is, if the user's screen dimensions fall under
-         * the 'default' breakpoint trigger, then the code inside will
-         * never be executed.
-         */
-        if (previous_breakpoint_trigger !== current_breakpoint_trigger) {
-          const breakpoint_objects = storage_of_breakpoints.get(
-            current_breakpoint_trigger
+        if (previousBreakpointTrigger !== currentBreakpointTrigger) {
+          const breakpointObjects = storageOfBreakpoints.get(
+            currentBreakpointTrigger
           );
 
-          this.#remove_source_elements(breakpoint_objects);
-          this.#insert_source_elements(breakpoint_objects, false);
+          this.#removeSourceElements(breakpointObjects);
+          this.#insertSourceElements(breakpointObjects, false);
 
-          previous_breakpoint_trigger = current_breakpoint_trigger;
+          previousBreakpointTrigger = currentBreakpointTrigger;
         }
       }
     );
 
-    resize_observer.observe(document.documentElement);
+    resizeObserver.observe(document.documentElement);
   }
 
-  #assemble_breakpoints(breakpoints, source_element) {
-    if (this.#get_object_type(breakpoints) !== '[object Object]') {
+  #assembleBreakpoints(breakpoints, sourceElement) {
+    if (this.#getObjectType(breakpoints) !== '[object Object]') {
       throw TypeError(`the value specified for the 'breakpoints' parameter must be an object of type 'Object'`);
     }
 
-    const breakpoint_entries = Object.entries(breakpoints);
+    const breakpointEntries = Object.entries(breakpoints);
 
-    if (breakpoint_entries.length === 0) {
+    if (breakpointEntries.length === 0) {
       throw TypeError(`at least one breakpoint must be specified for the 'breakpoints' object`);
     }
 
-    const validated_breakpoints = Object.fromEntries(
-      breakpoint_entries.map(
-        ([breakpoint_trigger, breakpoint_object]) => {
-          const breakpoint_trigger_as_number = Number(breakpoint_trigger);
+    const validatedBreakpoints = Object.fromEntries(
+      breakpointEntries.map(
+        ([breakpointTrigger, breakpointObject]) => {
+          const breakpointTriggerAsNumber = Number(breakpointTrigger);
 
           if (
-            !breakpoint_trigger_as_number ||
-            breakpoint_trigger_as_number <= 0 ||
-            breakpoint_trigger_as_number > Number.MAX_SAFE_INTEGER
+            !breakpointTriggerAsNumber ||
+            breakpointTriggerAsNumber <= 0 ||
+            breakpointTriggerAsNumber > Number.MAX_SAFE_INTEGER
           ) {
             throw RangeError(`the breakpoint trigger must be a safe (integer or fractional) number greater than zero`);
           }
 
-          if (this.#get_object_type(breakpoint_object) !== '[object Object]') {
+          if (this.#getObjectType(breakpointObject) !== '[object Object]') {
             throw TypeError(`the breakpoint object must be of type 'Object'`);
           }
 
-          if (!Object.hasOwn(breakpoint_object, 'target_element')) {
-            throw TypeError(`the 'target_element' parameter is not specified for the breakpoint object`);
+          if (!Object.hasOwn(breakpointObject, 'targetElement')) {
+            throw TypeError(`the 'targetElement' parameter is not specified for the breakpoint object`);
           }
 
-          const { target_element, target_position } = breakpoint_object;
+          const { targetElement, targetPosition } = breakpointObject;
 
-          if (!(target_element instanceof Element)) {
-            throw TypeError(`the value specified for the 'target_element' parameter must be an object of type 'Element'`);
+          if (!(targetElement instanceof Element)) {
+            throw TypeError(`the value specified for the 'targetElement' parameter must be an object of type 'Element'`);
           }
 
-          if (source_element === target_element) {
-            throw TypeError(`the value specified for the 'target_element' parameter must be different from the value specified for the 'source_element' parameter`);
+          if (sourceElement === targetElement) {
+            throw TypeError(`the value specified for the 'targetElement' parameter must be different from the value specified for the 'sourceElement' parameter`);
           }
 
-          if (this.#is_target_element_descendant_of_source_element(
-            target_element, source_element
+          if (this.#isTargetElementDescendantOfSourceElement(
+            targetElement, sourceElement
           )) {
-            throw TypeError(`the element that is specified as the value for the 'target_element' parameter must not be a descendant of the element specified as the value for the 'source_element' parameter`);
+            throw TypeError(`the element that is specified as the value for the 'targetElement' parameter must not be a descendant of the element specified as the value for the 'sourceElement' parameter`);
           }
 
-          if (this.#is_tag_of_target_element_self_closing(target_element)) {
-            throw TypeError(`the element specified as the value for the 'target_element' parameter must be a paired tag`);
+          if (this.#isTagOfTargetElementSelfClosing(targetElement)) {
+            throw TypeError(`the element specified as the value for the 'targetElement' parameter must be a paired tag`);
           }
 
-          if (Object.hasOwn(breakpoint_object, 'target_position')) {
-            if (typeof target_position !== 'number') {
-              throw TypeError(`the value specified for the 'target_position' parameter must be of type 'number'`);
+          if (Object.hasOwn(breakpointObject, 'targetPosition')) {
+            if (typeof targetPosition !== 'number') {
+              throw TypeError(`the value specified for the 'targetPosition' parameter must be of type 'number'`);
             }
 
-            if (target_position < 0 || !Number.isSafeInteger(target_position)) {
-              throw RangeError(`the number specified as the value for the 'target_position' parameter must be a non-negative safe integer`);
+            if (targetPosition < 0 || !Number.isSafeInteger(targetPosition)) {
+              throw RangeError(`the number specified as the value for the 'targetPosition' parameter must be a non-negative safe integer`);
             }
           }
 
           return [
-            breakpoint_trigger_as_number,
+            breakpointTriggerAsNumber,
             {
-              target_position: target_position ?? 0,
+              targetPosition: targetPosition ?? 0,
 
-              ...breakpoint_object
+              ...breakpointObject
             }
           ];
         }
       )
     );
 
-    /**
-     * The 'default' breakpoint is needed in order to be able to return
-     * the source element to the position from which the first
-     * transfer was made.
-     */
-    validated_breakpoints.default = this.#generate_breakpoint_object(
-      source_element,
+    validatedBreakpoints.default = this.#generateBreakpointObject(
+      sourceElement,
       false
     );
 
-    return validated_breakpoints;
+    return validatedBreakpoints;
   }
 
-  #get_child_elements_of_target_element(target_element) {
-    return target_element.children;
+  #getChildElementsOfTargetElement(targetElement) {
+    return targetElement.children;
   }
 
-  #get_breakpoint_trigger(breakpoint_triggers, current_width) {
-    /**
-     * Since the 'Desktop First' approach is used by default, we check from
-     * the smallest to the largest for the convenience of finding the nearest
-     * breakpoint trigger. At the same time, the collection of breakpoint
-     * triggers is arranged in a different order, from larger to smaller.
-     * ——————————————————————————————————————————————————
-     * In addition, we should also skip the 'default' located at the very end.
-     * Therefore, the search starts with the penultimate breakpoint trigger.
-     */
-    for (let i = breakpoint_triggers.length - 2; i >= 0; --i) {
-      const breakpoint_trigger = breakpoint_triggers[i];
+  #getBreakpointTrigger(breakpointTriggers, currentWidth) {
+    let startIndex = 0;
+    let endIndex = breakpointTriggers.length - 2;
+    let savedBreakpointTrigger;
 
-      if (current_width <= breakpoint_trigger) {
-        return breakpoint_trigger;
+    while (startIndex <= endIndex) {
+      const middleIndex = Math.floor((startIndex + endIndex) / 2);
+      const guessedBreakpointTrigger = breakpointTriggers[middleIndex];
+
+      if (guessedBreakpointTrigger == currentWidth) {
+        return guessedBreakpointTrigger;
+      } else if (guessedBreakpointTrigger > currentWidth) {
+        endIndex = middleIndex - 1;
+      } else {
+        startIndex = middleIndex + 1;
+      }
+
+      if ((guessedBreakpointTrigger - currentWidth) > 0) {
+        savedBreakpointTrigger = guessedBreakpointTrigger;
       }
     }
 
-    return 'default';
+    return savedBreakpointTrigger ?? 'default';
   }
 
-  #get_scrollbar_width(observable_element) {
-    const available_screen_width = window.screen.availWidth;
-    const width_of_observable_element = observable_element.clientWidth;
+  #getScrollbarWidth(observableElement) {
+    const availableScreenWidth = window.screen.availWidth;
+    const widthOfObservableElement = observableElement.clientWidth;
 
-    let scrollbar_width = 0;
+    let scrollbarWidth = 0;
 
-    if (width_of_observable_element !== available_screen_width) {
-      scrollbar_width += available_screen_width - width_of_observable_element;
+    if (widthOfObservableElement !== availableScreenWidth) {
+      scrollbarWidth += availableScreenWidth - widthOfObservableElement;
     }
 
-    return scrollbar_width;
+    return scrollbarWidth;
   }
 
-  #get_object_type(object) {
+  #getObjectType(object) {
     return Object.prototype.toString.call(object);
   }
 
-  #is_target_element_descendant_of_source_element(
-    target_element,
-    source_element
+  #isTargetElementDescendantOfSourceElement(
+    targetElement,
+    sourceElement
   ) {
-    while (target_element = target_element.parentElement) {
-      if (target_element === source_element) {
+    while (targetElement = targetElement.parentElement) {
+      if (targetElement === sourceElement) {
         return true;
       }
     }
@@ -299,85 +274,83 @@ class TransferElements {
     return false;
   }
 
-  #is_tag_of_target_element_self_closing(target_element) {
-    return !new RegExp(/<\/[a-zA-Z]+>$/).test(target_element.outerHTML);
+  #isTagOfTargetElementSelfClosing(targetElement) {
+    return !new RegExp(/<\/[a-zA-Z]+>$/).test(targetElement.outerHTML);
   }
 
-  #sort_breakpoint_objects(breakpoint_objects) {
-    if (breakpoint_objects.length > 1) {
-      breakpoint_objects.sort((a, b) => (
-        a.target_position - b.target_position
+  #sortBreakpointObjects(breakpointObjects) {
+    if (breakpointObjects.length > 1) {
+      breakpointObjects.sort((a, b) => (
+        a.targetPosition - b.targetPosition
       ));
     }
   }
 
-  #remove_source_elements(breakpoint_objects) {
-    breakpoint_objects.forEach(({ source_element }) => {
-      source_element.remove();
+  #removeSourceElements(breakpointObjects) {
+    breakpointObjects.forEach(({ sourceElement }) => {
+      sourceElement.remove();
     });
   }
 
-  #insert_source_elements(
-    breakpoint_objects,
-    has_check_of_maximum_target_position
+  #insertSourceElements(
+    breakpointObjects,
+    hasCheckOfMaximumTargetPosition
   ) {
-    breakpoint_objects.forEach(
-      ({ source_element, target_element, target_position }) => {
-        const child_elements_of_target_element = (
-          this.#get_child_elements_of_target_element(target_element)
+    breakpointObjects.forEach(
+      ({ sourceElement, targetElement, targetPosition }) => {
+        const childElementsOfTargetElement = (
+          this.#getChildElementsOfTargetElement(targetElement)
         );
 
-        if (has_check_of_maximum_target_position) {
-          this.#throw_exception_if_maximum_target_position_is_exceeded(
-            child_elements_of_target_element,
-            target_position
+        if (hasCheckOfMaximumTargetPosition) {
+          this.#throwExceptionIfMaximumTargetPositionIsExceeded(
+            childElementsOfTargetElement,
+            targetPosition
           );
         }
 
-        const child_element_of_target_element = (
-          child_elements_of_target_element[target_position]
+        const childElementOfTargetElement = (
+          childElementsOfTargetElement[targetPosition]
         );
 
-        if (!child_element_of_target_element) {
-          target_element.append(source_element);
-
-          return;
+        if (childElementOfTargetElement) {
+          childElementOfTargetElement.before(sourceElement);
+        } else {
+          targetElement.append(sourceElement);
         }
-
-        child_element_of_target_element.before(source_element);
       }
     );
   }
 
-  #throw_exception_if_maximum_target_position_is_exceeded(
-    child_elements_of_target_element,
-    target_position
+  #throwExceptionIfMaximumTargetPositionIsExceeded(
+    childElementsOfTargetElement,
+    targetPosition
   ) {
-    const maximum_target_position = child_elements_of_target_element.length;
+    const maximumTargetPosition = childElementsOfTargetElement.length;
 
-    if (target_position > maximum_target_position) {
-      throw RangeError(`the number specified as the value for the 'target_position' parameter exceeds the maximum allowed value of '${maximum_target_position}'`);
+    if (targetPosition > maximumTargetPosition) {
+      throw RangeError(`the number specified as the value for the 'targetPosition' parameter exceeds the maximum allowed value of '${maximumTargetPosition}'`);
     }
   }
 
-  #generate_breakpoint_object(source_element, is_complete) {
-    const parent_element_of_source_element = source_element.parentElement;
+  #generateBreakpointObject(sourceElement, isComplete) {
+    const parentElementOfSourceElement = sourceElement.parentElement;
 
-    const breakpoint_object = {
-      target_element: parent_element_of_source_element,
-      target_position: [
-        ...parent_element_of_source_element.children
+    const breakpointObject = {
+      targetElement: parentElementOfSourceElement,
+      targetPosition: [
+        ...parentElementOfSourceElement.children
       ].findIndex(
-        (child_element_of_source_element) => (
-          child_element_of_source_element === source_element
+        (childElementOfSourceElement) => (
+          childElementOfSourceElement === sourceElement
         )
       )
     };
 
-    if (is_complete) {
-      breakpoint_object.source_element = source_element;
+    if (isComplete) {
+      breakpointObject.sourceElement = sourceElement;
     }
 
-    return breakpoint_object;
+    return breakpointObject;
   }
 }

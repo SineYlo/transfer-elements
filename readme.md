@@ -1,8 +1,20 @@
 <h1 align="center">
- 🌿 Transfer Elements 🌿
+ ❄️ Transfer Elements ❄️
 </h1>
 
 ![Cover](./assets/cover.png)
+
+<p align="center">
+  <a>
+    <img src="https://img.shields.io/github/created-at/sineylo/transfer-elements?style=for-the-badge&logo=github&labelColor=%232E3440&color=%23D8DEE9" alt="GitHub created at">
+  </a>
+  <a>
+    <img src="https://img.shields.io/npm/dw/transfer-elements?style=for-the-badge&logo=npm&labelColor=%232E3440&color=%23D8DEE9" alt="NPM downloads">
+  </a>
+  <a>
+    <img src="https://img.shields.io/bundlejs/size/transfer-elements?style=for-the-badge&logo=npm&labelColor=%232E3440&color=%23D8DEE9" alt="NPM package minimized gzipped size">
+  </a>
+</p>
 
 <p align="center">
   <strong>The future belongs to those who are preparing for it today. (Malcolm X)</strong>
@@ -14,12 +26,47 @@
 
 ## ![Navigation](./assets/navigation-section-en.png)
 
+- [Description](#description)
+- [Advantages](#advantages)
 - [Installation](#installation)
 - [Connection](#connection)
 - [Usage](#usage)
 - [Parameters](#parameters)
 - [Browser compatibility](#browser-compatibility)
-- [History of creation](#history-of-creation)
+- [Community](#community)
+
+<h2 id="description">
+  <img src="./assets/description-section-en.png" alt="Description">
+</h2>
+
+“Transfer Elements” — a library that allows you to dynamically transfer any elements from one place to another on breakpoints.
+
+### Why might this be necessary?
+
+Let's imagine that the designer initially prepared a layout only for computers, in which there is a complex header consisting of several rows. In one of these rows there is an input field for searching for products and some other elements. After some time, the designer starts designing the first layout for the adaptive and realizes that the search field does not have enough space and decides to move it to a more free row.
+
+As developers, we need to solve this problem somehow, and without using JS, there are two options that are not very good.
+
+The first — to duplicate the markup. The disadvantage of this method is that the code is bloated. And okay, if you need to move one `<div>`, but if the whole section? In addition, the element may have an `id` attribute, then it will also have to be changed, since there cannot be two identical `id` in the markup.
+
+The second — to use absolute positioning. This option seems good, but in fact it is even worse, as it breaks accessibility. Yes, visually the element will be where we need it, bun in the `DOM` it will remain in the same place. And screen readers overwhelmingly focus on the `DOM` rather than the visual location, because it can be anything.
+
+So the library **solves** this problem. It just “takes” an element from the `DOM` and moves it to where you need it. At the same time, there is no duplication in the markup or the use of absolute positioning.
+
+---
+
+The main **purpose** of this library — to give freedom for web designers to create. I believe that they should not adapt to us, but we should adapt to them. The more tools that allow us to implement their ideas begin to appear, the faster we will come to a point where each site will look modern, and most importantly, it will be convenient to use from any device.
+
+<h2 id="advantages">
+  <img src="./assets/advantages-section-en.png" alt="Advantages">
+</h2>
+
+- **Without dependencies**. All the code is written from scratch and there are no third-party solutions.
+- **Innovative technology**. The library is based on own technology “Transfer Elements Simulation” (TES). Thanks to it, the sequential transfer (lifting the entire breakpoint chain) is performed only once.
+- **Multiple transfer**. The maximum number of breakpoints is unlimited. Add as many of them as required for your project.
+- **Two-step data validation**. A wide variety of user data checks have been added to the library. At the first stage, the data is checked for compliance with the required type. After that, the second stage begins and the possibility of inserting into the target element is checked. There is also an additional check for rare cases built into TES. If something goes wrong, you will receive a detailed error message.
+- **Accessibility**. Breakpoints have no connection to any CSS units of measurement. Despite the fact that there is some similarity to pixels (`px`), all the library code works with a regular number. Therefore, when you change the font settings in the browser, nothing will break.
+- **Speed**. In addition to raising the entire breakpoint chain once, the search for the breakpoint itself, at the time of the main transfer, is performed in logarithmic time `O(log n)`.
 
 <h2 id="installation">
   <img src="./assets/installation-section-en.png" alt="Installation">
@@ -53,7 +100,7 @@ import TransferElements from 'transfer-elements';
 If you haven't installed the library, you can import it from the CDN.
 
 ```JS
-import TransferElements from 'https://cdn.jsdelivr.net/npm/transfer-elements@1.0.4/dist/transfer-elements.esm.min.js'
+import TransferElements from 'https://cdn.jsdelivr.net/npm/transfer-elements@1.0.5/dist/transfer-elements.esm.min.js'
 ```
 
 ### Tag \<script\>
@@ -61,18 +108,18 @@ import TransferElements from 'https://cdn.jsdelivr.net/npm/transfer-elements@1.0
 Just like with modules, you can use CDN if you wish.
 
 ```HTML
-<script src="https://cdn.jsdelivr.net/npm/transfer-elements@1.0.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/transfer-elements@1.0.5"></script>
 ```
 
 The link is shorter than for modules because the file is requested by default `transfer-elements.min.js `. Anyway, you can specify the full link.
 
 ```HTML
-<script src="https://cdn.jsdelivr.net/npm/transfer-elements@1.0.4/dist/transfer-elements.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/transfer-elements@1.0.5/dist/transfer-elements.min.js"></script>
 ```
 
 ### Other
 
-If all of the above options are not suitable for any reason, you can [download the files](https://registry.npmjs.org/transfer-elements/-/transfer-elements-1.0.4.tgz) and connect the library the way you need.
+If all of the above options are not suitable for any reason, you can [download the files](https://registry.npmjs.org/transfer-elements/-/transfer-elements-1.0.5.tgz) and connect the library the way you need.
 
 <h2 id="usage">
   <img src="./assets/usage-section-en.png" alt="Usage">
@@ -188,7 +235,6 @@ new TransferElements(
 | -------- | ---------- | ------------ | ---------- | ---------- |
 | `sourceElement` | [Element](https://developer.mozilla.org/en-US/docs/Web/API/Element) | | Yes | The element that needs to be transferred. |
 | `breakpoints` | [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) | | Yes | Breakpoints based on which the `sourceElement` should be transferred. |
-| `breakpoint` | [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) | | Yes | The breakpoint based on which to transfer the `sourceElement`. |
 | `targetElement` | [Element](https://developer.mozilla.org/en-US/docs/Web/API/Element) | | Yes | The element to which the `sourceElement` should be transferred. |
 | `targetPosition` | [Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number) | `0` | No | The position where the `sourceElement` should be in the `targetElement`. |
 
@@ -219,18 +265,8 @@ new TransferElements(
   </table>
 </div>
 
-<h2 id="history-of-creation">
-  <img src="./assets/history-of-creation-section-en.png" alt="History of creation">
+<h2 id="community">
+  <img src="./assets/community-section-en.png" alt="Community">
 </h2>
 
-I, like many other web developers, started my journey by learning HTML/CSS. Of course, I didn't know the JS programming language, but that didn't stop me from taking on projects of various levels of complexity. I was sure that any problem that arose would be closed by a library that someone had already written a long time ago.
-
-One day I saw a layout in which, on the mobile version of the main page, it was necessary to move a block from one section to another. The first thing that came to my mind was to use absolute positioning, but in this case accessibility will suffer. The second is to duplicate the block, hiding it initially, because it should not be visible on the computer version. The bottom line is that depending on the breakpoint, one block would be shown and the other hidden. The disadvantage of this option is a banal increase in the number of lines of code, as well as, accordingly, the weight of the file.
-
-Both of these options did not suit me and I started looking for a library. But my search was not successful. All those code snippets that I found either didn't work as they should, or weren't completed at all.
-
-Quite a long time has passed since that moment and I decided to return to this problem, since it did not give me peace of mind. Back then, I found out that everything rested on the `change` event of the `MediaQueryList` object.
-
-Let's say we need to perform a transfer on ten breakpoints. If we immediately switch to the last breakpoint, the event will trigger all ten times. With constant switching between breakpoints, the event will be triggered for each breakpoint up to the active one and, in addition, carry out transfers. Therefore, this event is too costly in terms of performance.
-
-Anyway, I managed to solve the problem and ensure that the sequential transfer is performed only once when the page loads. This is achieved through the "Transfer Simulation" technology, which you can read about below. An incredible number of days have been spent thinking about everything, but the result is worth it.
+If you have any ideas on how to improve the library or something became unclear at any stage when reading the documentation, do not hesitate and write in the “Issues” section, or by email: sineylodev@gmail.com. I am interested in developing my products, so I will try to answer all questions as quickly as possible. Together we can make the interface development process much more enjoyable ✨
