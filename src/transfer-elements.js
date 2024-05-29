@@ -1,7 +1,7 @@
 /**
  * @file Dynamic transfer of elements from one place to another at breakpoints.
  * @copyright SineYlo, 2024
- * @version 1.0.5
+ * @version 1.0.6
  * @license MIT
  */
 
@@ -246,7 +246,10 @@ class TransferElements {
 
   #getScrollbarWidth(observableElement) {
     const availableScreenWidth = window.screen.availWidth;
-    const widthOfObservableElement = observableElement.clientWidth;
+    const widthOfObservableElement = Math.min(
+      observableElement.clientWidth,
+      observableElement.offsetWidth
+    );
 
     let scrollbarWidth = 0;
 
