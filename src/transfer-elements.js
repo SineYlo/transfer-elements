@@ -1,7 +1,7 @@
 /**
  * @file Dynamic transfer of elements from one place to another at breakpoints.
  * @copyright SineYlo, 2024
- * @version 1.0.6
+ * @version 1.0.7
  * @license MIT
  */
 
@@ -245,7 +245,7 @@ class TransferElements {
   }
 
   #getScrollbarWidth(observableElement) {
-    const availableScreenWidth = window.screen.availWidth;
+    const viewportWidth = window.innerWidth;
     const widthOfObservableElement = Math.min(
       observableElement.clientWidth,
       observableElement.offsetWidth
@@ -253,8 +253,8 @@ class TransferElements {
 
     let scrollbarWidth = 0;
 
-    if (widthOfObservableElement !== availableScreenWidth) {
-      scrollbarWidth += availableScreenWidth - widthOfObservableElement;
+    if (widthOfObservableElement !== viewportWidth) {
+      scrollbarWidth += viewportWidth - widthOfObservableElement;
     }
 
     return scrollbarWidth;

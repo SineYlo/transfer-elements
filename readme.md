@@ -100,7 +100,7 @@ import TransferElements from 'transfer-elements';
 If you haven't installed the library, you can import it from the CDN.
 
 ```JS
-import TransferElements from 'https://cdn.jsdelivr.net/npm/transfer-elements@1.0.6/dist/transfer-elements.esm.min.js'
+import TransferElements from 'https://cdn.jsdelivr.net/npm/transfer-elements@1.0.7/dist/transfer-elements.esm.min.js'
 ```
 
 ### Tag \<script\>
@@ -108,18 +108,18 @@ import TransferElements from 'https://cdn.jsdelivr.net/npm/transfer-elements@1.0
 Just like with modules, you can use CDN if you wish.
 
 ```HTML
-<script src="https://cdn.jsdelivr.net/npm/transfer-elements@1.0.6"></script>
+<script src="https://cdn.jsdelivr.net/npm/transfer-elements@1.0.7"></script>
 ```
 
 The link is shorter than for modules because the file is requested by default `transfer-elements.min.js `. Anyway, you can specify the full link.
 
 ```HTML
-<script src="https://cdn.jsdelivr.net/npm/transfer-elements@1.0.6/dist/transfer-elements.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/transfer-elements@1.0.7/dist/transfer-elements.min.js"></script>
 ```
 
 ### Other
 
-If all of the above options are not suitable for any reason, you can [download the files](https://registry.npmjs.org/transfer-elements/-/transfer-elements-1.0.6.tgz) and connect the library the way you need.
+If all of the above options are not suitable for any reason, you can [download the files](https://registry.npmjs.org/transfer-elements/-/transfer-elements-1.0.7.tgz) and connect the library the way you need.
 
 <h2 id="usage">
   <img src="./assets/usage-section-en.png" alt="Usage">
