@@ -225,7 +225,7 @@ class TransferElements {
     let savedBreakpointTrigger;
 
     while (startIndex <= endIndex) {
-      const middleIndex = Math.floor((startIndex + endIndex) / 2);
+      const middleIndex = Math.floor(startIndex + (endIndex - startIndex) / 2);
       const guessedBreakpointTrigger = breakpointTriggers[middleIndex];
 
       if (guessedBreakpointTrigger == currentWidth) {
